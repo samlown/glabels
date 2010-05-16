@@ -193,6 +193,8 @@ gl_barcode_gnubarcode_new (const gchar    *id,
 	bci->width  = w;
 	bci->height = h;
 
+	g_message ("Incoming Barcode Dimensions: %f x %f", w, h);
+
 	Barcode_Encode (bci, flags);
 	if (!bci->partial || !bci->textinfo) {
 		Barcode_Delete (bci);

@@ -21,9 +21,9 @@ INCLUDES = \
 	-DGLABELS_GLADE_DIR=\""$(datadir)/glabels/glade/"\"	\
 	-DGLABELS_ICON_DIR=\""$(datadir)/pixmaps/"\"	\
 	-DGLABELS_PIXMAP_DIR=\""$(datadir)/pixmaps/glabels/"\"	\
-	-DG_LOG_DOMAIN=\""glabels\""
+	-DG_LOG_DOMAIN=\""glabels\"" 
 
-glabels_LDFLAGS = -export-dynamic
+glabels_LDFLAGS = -export-dynamic -lzint
 
 glabels_LDADD = 				\
 	$(GLABELS_LIBS)				\
@@ -32,7 +32,7 @@ glabels_LDADD = 				\
 	$(LIB_BARCODE_DIR)/libbarcode.la 	\
 	$(LIB_IEC16022_DIR)/libiec16022.la
 
-glabels_batch_LDFLAGS = -export-dynamic
+glabels_batch_LDFLAGS = -export-dynamic -lzint
 
 glabels_batch_LDADD = 				\
 	$(GLABELS_LIBS)				\
@@ -119,6 +119,8 @@ glabels_SOURCES = 			\
 	bc.h				\
 	bc-gnubarcode.c			\
 	bc-gnubarcode.h			\
+	bc-zint.c		\
+	bc-zint.h		\
 	bc-postnet.c			\
 	bc-postnet.h			\
 	bc-iec16022.c			\
@@ -200,6 +202,8 @@ glabels_batch_SOURCES = 		\
 	bc.h				\
 	bc-gnubarcode.c			\
 	bc-gnubarcode.h			\
+	bc-zint.c		\
+	bc-zint.h		\
 	bc-postnet.c			\
 	bc-postnet.h			\
 	bc-iec16022.c			\

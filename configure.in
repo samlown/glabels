@@ -59,6 +59,7 @@ LIBGNOMEUI_REQUIRED=2.16.0
 LIBXML_REQUIRED=2.6.0
 LIBGLADE_REQUIRED=2.6.0
 LIBEBOOK_REQUIRED=1.8.0
+LIBZINT_REQUIRED=2.3.1
 
 dnl Make above strings available for packaging files (e.g. rpm spec files)
 AC_SUBST(GLIB_REQUIRED)
@@ -68,6 +69,7 @@ AC_SUBST(LIBGNOMEUI_REQUIRED)
 AC_SUBST(LIBXML_REQUIRED)
 AC_SUBST(LIBGLADE_REQUIRED)
 AC_SUBST(LIBEBOOK_REQUIRED)
+AC_SUBST(LIBZINT_REQUIRED)
 
 
 dnl ---------------------------------------------------------------------------

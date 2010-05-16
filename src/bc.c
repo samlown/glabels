@@ -32,6 +32,7 @@
 
 #include "bc-postnet.h"
 #include "bc-gnubarcode.h"
+#include "bc-zint.h"
 #include "bc-iec16022.h"
 
 #include "debug.h"
@@ -151,6 +152,12 @@ static const Backend backends[] = {
 	{ "PLS", N_("Plessey"), gl_barcode_gnubarcode_new,
 	  TRUE, TRUE, TRUE, TRUE, "0000000000", TRUE, 10},
 
+	{ "Code93", N_("Code 93"), gl_barcode_gnubarcode_new,
+	  TRUE, TRUE, TRUE, FALSE, "0000000000", TRUE, 10},
+
+	{ "GS1-128", N_("GS1-128"), gl_barcode_zint_new,
+	  TRUE, TRUE, TRUE, TRUE, "[00]001234560000000018", TRUE, 16},
+
 	{ "IEC16022", N_("IEC16022 (DataMatrix)"), gl_barcode_iec16022_new,
 	  FALSE, FALSE, TRUE, FALSE, "12345678", TRUE, 8},
 
@@ -162,7 +169,7 @@ static const Backend backends[] = {
 /* Private function prototypes.                           */
 /*========================================================*/
 
-
+
 /*---------------------------------------------------------------------------*/
 /* Convert id to index into above table.                                     */
 /*---------------------------------------------------------------------------*/
