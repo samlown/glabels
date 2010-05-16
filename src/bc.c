@@ -156,7 +156,7 @@ static const Backend backends[] = {
 	  TRUE, TRUE, TRUE, FALSE, "0000000000", TRUE, 10},
 
 	{ "GS1-128", N_("GS1-128"), gl_barcode_zint_new,
-	  TRUE, TRUE, TRUE, TRUE, "[00]001234560000000018", TRUE, 16},
+	  TRUE, TRUE, FALSE, FALSE, "[00]001234560000000018", TRUE, 16},
 
 	{ "IEC16022", N_("IEC16022 (DataMatrix)"), gl_barcode_iec16022_new,
 	  FALSE, FALSE, TRUE, FALSE, "12345678", TRUE, 8},

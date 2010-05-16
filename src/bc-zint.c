@@ -40,7 +40,7 @@
 /*===========================================*/
 /* Local function prototypes                 */
 /*===========================================*/
-static glBarcode *render_zint     (struct zint_symbol *symbol, gdouble w);
+static glBarcode *render_zint     (struct zint_symbol *symbol, gboolean text_flag);
 gint module_is_set(struct zint_symbol *symbol, gint y_coord, gint x_coord);
 
 
@@ -72,38 +72,34 @@ gl_barcode_zint_new (const gchar    *id,
 		return NULL;
 	}
 
-	/* Flags not supported yet!! 
-        if (!text_flag) {
-		flags |= BARCODE_NO_ASCII;
-	}
+	/* Checksum not supported yet!! 
 	if (!checksum_flag) {
 		flags |= BARCODE_NO_CHECKSUM;
 	}
 	*/
 
-	g_message ("Zint Requested Dimensions: %f x %f", w, h);
-	symbol->scale = 1.0;
-	// symbol->width  = (w > 0.0 ? (gint)w : 120);
-	symbol->height = (h > 0.0 ? (gint)h : 50);
+	// g_message ("Zint Requested Dimensions: %f x %f", w, h);
 
-	// g_message ("Zint Barcode Dimensions: %d x %d", symbol->width, symbol->height);
-
-	g_message ("Zint Text: %s", digits);
 	result = ZBarcode_Encode(symbol, (unsigned char *)digits, 0);
 	if (result) {
 		ZBarcode_Delete (symbol);
+		g_message ("Zint Error: %s", symbol->errtxt);
 		return NULL;
 	}
 
-	g_message ("Zint rendered, converting data");
-	/* now render with our custom back-end,
-	   to create appropriate intermdediate format */
-	gbc = render_zint(symbol, w);
-	g_message ("Zint Barcode Dimensions: %f x %f", gbc->width, gbc->height);
+	/* Scale calculated after height, always maintain aspect ratio */
+	// symbol->height = (h > 0.0 ? (gint)h : 50);
+	symbol->scale = (w / symbol->width);
+	symbol->height = h / symbol->scale; // height always in standard size
+
+
+	/* Convert Sums provided by zint encode */
+	gbc = render_zint(symbol, text_flag);
+
+	// g_message ("Zint Barcode Dimensions: %f x %f", gbc->width, gbc->height);
 
 	ZBarcode_Delete(symbol);
 
-	g_message ("Zint End");
 	return gbc;
 }
 
@@ -112,10 +108,10 @@ gl_barcode_zint_new (const gchar    *id,
  * PRIVATE. Render to glBarcode the provided Zint symbol.
  *
  * Based on the SVG output from Zint library, handles lots of otherwise
- * internal Zint code to convert directly to glBarcode representation.
+ * internal  Zint code to convert directly to glBarcode representation.
  *
  *--------------------------------------------------------------------------*/
-static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
+static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 
 	glBarcode     *gbc;
 	glBarcodeLine *line;
@@ -124,7 +120,7 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 	gint i, r, block_width, latch, this_row;
 	gfloat textpos, large_bar_height, preset_height, row_height, row_posn = 0.0;
 	gint error_number = 0;
-	gint textoffset, xoffset, yoffset, textdone, main_width;
+	gint textoffset, textheight, xoffset, yoffset, textdone, main_width;
 	gchar textpart[10], addon[6];
 	gint large_bar_count, comp_offset;
 	gfloat addon_text_posn;
@@ -141,12 +137,19 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 	comp_offset = 0;
 	addon_text_posn = 0.0;
 
-	if (symbol->height == 0) {
-		symbol->height = 50;
+	if (symbol->height < 15) {
+		symbol->height = 15;
 	}
+	// symbol->height = 50;
 
-	/* Calculate the scale factor based on width */
-	scaler = (w / symbol->width);
+	if(text_flag && strlen(symbol->text) != 0) {
+		textheight = 9.0;
+		textoffset = 2.0;
+	} else {
+		textheight = textoffset = 0.0;
+	}
+	// Update height for texts
+	symbol->height -= textheight + textoffset;
 
 	large_bar_count = 0;
 	preset_height = 0.0;
@@ -166,16 +169,19 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 		comp_offset++;
 	}
 
-	textoffset = 1.0;
-	default_text_posn = (symbol->height + textoffset + symbol->border_width) * scaler;
+	xoffset = symbol->border_width + symbol->whitespace_width;
+	yoffset = symbol->border_width;
 
+	gbc->width = (gdouble) (symbol->width + xoffset + xoffset) * scaler;
+	gbc->height = (gdouble) (symbol->height + textheight + textoffset + yoffset + yoffset) * scaler;
+
+	default_text_posn = (symbol->height + textoffset + symbol->border_width) * scaler;
 
 	if(symbol->symbology != BARCODE_MAXICODE) {
 		/* everything else uses rectangles (or squares) */
 		/* Works from the bottom of the symbol up */
 		int addon_latch = 0;
 		
-		g_message ("Zint starting loop, rows: %d", symbol->rows);
 		for(r = 0; r < symbol->rows; r++) {
 			this_row = r;
 			if(symbol->row_height[this_row] == 0) {
@@ -193,7 +199,6 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 			}
 			row_posn += yoffset;
 			
-			g_message ("Zint running module is set");
 			i = 0;
 			if(module_is_set(symbol, this_row, 0)) {
 				latch = 1;
@@ -201,7 +206,6 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 				latch = 0;
 			}
 
-			g_message ("Zint adding lines");
 			do {
 				block_width = 0;
 				do {
@@ -215,16 +219,16 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 					/* a bar */
                                         line = g_new0 (glBarcodeLine, 1);
 
-					line->width = (block_width * scaler);
+					line->width = block_width * scaler;
 					/* glBarcodeLine centers based on width, counter-act!!! */
-					line->x = ((i + xoffset) * scaler) + (line->width / 2);
+					line->x = ((i + xoffset) + (block_width / 2.0)) * scaler;
 				
 					if(addon_latch == 0) {
-						line->y = row_posn; // * scaler;
-						line->length = row_height; // * scaler;
+						line->y = row_posn * scaler;
+						line->length = row_height * scaler;
 					} else {
-						line->y = (row_posn + 10.0); // * scaler;
-						line->length = (row_height - 5.0); // * scaler;
+						line->y = (row_posn + 10.0) * scaler;
+						line->length = (row_height - 5.0) * scaler;
 					}
 					latch = 0;
 					// g_message ("Zint Adding Line at: %f x %f dim: %f x %f", line->x, line->y, line->width, line->length);
@@ -242,31 +246,35 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gdouble w) {
 
 
 
-	gbc->height = (gdouble) symbol->height + symbol->border_width; // * scaler;
-	gbc->width = (gdouble) symbol->width * scaler + symbol->border_width;
+
 
 	/* Add the text */
 	xoffset -= comp_offset;
 
-	for (p = symbol->text; *p != 0; p++) {
-		bchar = g_new0 (glBarcodeChar, 1);
-		bchar->x = (textpos + xoffset) * scaler;
-		bchar->y = default_text_posn;
-		bchar->fsize = 7.0 * scaler;
-		bchar->c = (gchar) *p;
-		gbc->chars = g_list_append (gbc->chars, bchar);
-		// Poor mans kerning
-		if (*p == '(') {
-			xoffset += 4.0 * scaler;
-		} else {
-			xoffset += 5.0 * scaler;
+	if (text_flag) {
+		// caculate start xoffset to center text
+		xoffset = symbol->width / 2.0;
+		xoffset -= (strlen(symbol->text) / 2) * 5.0;
+
+		for (p = symbol->text; *p != 0; p++) {
+			if (p != symbol->text && *p == '(') xoffset += 3.0;
+			bchar = g_new0 (glBarcodeChar, 1);
+			bchar->x = (textpos + xoffset) * scaler;
+			bchar->y = default_text_posn;
+			bchar->fsize = 8.0 * scaler;
+			bchar->c = (gchar) *p;
+			gbc->chars = g_list_append (gbc->chars, bchar);
+			// Poor mans kerning
+			if (*p == '(') {
+				xoffset += 3.0;
+			} else if (*p == ')') {
+				xoffset += 3.0;
+			} else {
+				xoffset += 5.0;
+			}
 		}
 	}
-	gbc->height += (gdouble) (8.0 * scaler) + textoffset;
 
-
-
-	g_message ("Zint All added, returning");
 	return gbc;
 }
 
