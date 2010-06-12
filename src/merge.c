@@ -166,6 +166,8 @@ gl_merge_get_descriptions (void)
 	GList   *p;
 	Backend *backend;
 
+        /* Translators: "None" here means that no document-merge source or
+         * method has been selected. */
 	descriptions = g_list_append (descriptions, g_strdup(_("None")));
 
 	for ( p=backends; p!=NULL; p=p->next) {
@@ -285,7 +287,7 @@ gl_merge_new (gchar *name)
 	for (p=backends; p!=NULL; p=p->next) {
 		backend = (Backend *)p->data;
 
-		if (g_strcasecmp(name, backend->name) == 0) {
+		if (g_ascii_strcasecmp(name, backend->name) == 0) {
 
 			merge = GL_MERGE (g_object_newv (backend->type,
 							 backend->n_params,
@@ -299,7 +301,7 @@ gl_merge_new (gchar *name)
 		}
 	}
 
-	if ( (merge == NULL) && (g_strcasecmp (name, "None") != 0)) {
+	if ( (merge == NULL) && (g_ascii_strcasecmp (name, "None") != 0)) {
 		g_message ("Unknown merge backend \"%s\"", name);
 	}
 

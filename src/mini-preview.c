@@ -1070,6 +1070,7 @@ draw_arrow  (glMiniPreview      *this,
         PangoFontDescription *desc;
         PangoRectangle        rect;
 
+        /* Translators: "Up" refers to the direction towards the top of a label. */
         const gchar          *up = _("Up");
 
         frame = (lglTemplateFrame *)this->priv->template->frames->data;

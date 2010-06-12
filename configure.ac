@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.63)
 
-AC_INIT([glabels],[2.3.pre0git],[http://sourceforge.net/tracker/?func=add&group_id=46122&atid=445116])
+AC_INIT([glabels],[2.3.0],[http://sourceforge.net/tracker/?func=add&group_id=46122&atid=445116])
 AC_CONFIG_SRCDIR(src/glabels.c)
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
@@ -70,8 +70,8 @@ dnl ---------------------------------------------------------------------------
 dnl - Library dependencies
 dnl ---------------------------------------------------------------------------
 dnl Required dependencies
-GLIB_REQUIRED=2.22.0
-GTK_REQUIRED=2.18.0
+GLIB_REQUIRED=2.24.0
+GTK_REQUIRED=2.20.0
 GCONF_REQUIRED=2.28.0
 LIBXML_REQUIRED=2.7.0
 

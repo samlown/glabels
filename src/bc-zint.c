@@ -91,18 +91,13 @@ gl_barcode_zint_new (const gchar          *id,
 	}
 	*/
 
-	// g_message ("Zint Requested Dimensions: %f x %f", w, h);
-
 	result = ZBarcode_Encode(symbol, (unsigned char *)digits, 0);
 	if (result) {
 		ZBarcode_Delete (symbol);
-		g_message ("Zint Error: %s", symbol->errtxt);
+		gl_debug (DEBUG_BARCODE, "Zint Error: %s", symbol->errtxt);
 		return NULL;
 	}
 
-	/* Scale calculated after height, always maintain aspect ratio */
-	//symbol->scale = (w / symbol->width);
-	//symbol->height = h / symbol->scale; // height always in standard size
 
   /*
 	 * With the size and scale set, send a request to Zint renderer
@@ -133,10 +128,10 @@ gl_barcode_zint_new (const gchar          *id,
  *--------------------------------------------------------------------------*/
 static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 
-	glBarcode     *gbc;
-	glBarcodeLine *line;
-	glBarcodeChar *bchar;
-
+	glBarcode           *gbc;
+	glBarcodeShapeLine  *line;
+	glBarcodeShapeAlpha *bchar;
+	
 	struct zint_render        *render;
 	struct zint_render_line   *zline;
 	struct zint_render_string *zstring;
@@ -153,8 +148,8 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 	 * Zint already applies the scaling factor.
 	 */
 	zline = render->lines;
-  while (zline) {
-	  line = g_new0 (glBarcodeLine, 1);
+	while (zline) {
+		line = gl_barcode_shape_line_new ();
 
 		line->width = (gdouble) zline->width;
 		line->length = (gdouble) zline->length;
@@ -162,7 +157,7 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 		line->x = (gdouble) (zline->x + (zline->width / 2.0));
 		line->y = (gdouble) zline->y;
 
-		gbc->lines = g_list_append (gbc->lines, line);
+		gl_barcode_add_shape (gbc, (glBarcodeShape *)line);
 
 		// g_message ("Zint Adding Line at: %f x %f dim: %f x %f", line->x, line->y, line->width, line->length);
 		zline = zline->next;
@@ -189,13 +184,13 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 
       for (p = (gchar *) zstring->text; *p != 0; p++) {
 
-        bchar = g_new0 (glBarcodeChar, 1);
+        bchar = gl_barcode_shape_alpha_new ();
         bchar->x = xoffset;
         bchar->y = (gdouble) zstring->y;
         bchar->fsize = (gdouble) zstring->fsize;
         bchar->c = (gchar) *p;
 
-        gbc->chars = g_list_append (gbc->chars, bchar);
+				gl_barcode_add_shape (gbc, (glBarcodeShape *)bchar);
 
         xoffset += char_width;
       }
@@ -205,7 +200,7 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 	}
 
 	/*
-	 * Finally add complete sizes
+	 * Finally add complete sizes (removed so glabels' requested size is kept)
 	 */
   //gbc->width = (gdouble) render->width;
 	//gbc->height = (gdouble) render->height;
