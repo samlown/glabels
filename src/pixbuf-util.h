@@ -1,6 +1,6 @@
 /*
- *  file-util.h
- *  Copyright (C) 2001-2009  Jim Evins <evins@snaught.com>.
+ *  pixbuf-util.h
+ *  Copyright (C) 2010  Jim Evins <evins@snaught.com>.
  *
  *  This file is part of gLabels.
  *
@@ -18,24 +18,24 @@
  *  along with gLabels.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __FILE_UTIL_H__
-#define __FILE_UTIL_H__
+#ifndef __PIXBUF_UTIL_H__
+#define __PIXBUF_UTIL_H__
 
 #include <glib.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 G_BEGIN_DECLS
 
-gchar              *gl_file_util_add_extension         (const gchar       *orig_filename);
-gchar              *gl_file_util_remove_extension      (const gchar       *orig_filename);
 
-gchar              *gl_file_util_make_absolute         (const gchar       *filename);
+GdkPixbuf *gl_pixbuf_util_create_shadow_pixbuf (const GdkPixbuf *pixbuf,
+                                                guint            shadow_color,
+                                                gdouble          shadow_opacity);
 
-gboolean            gl_file_util_is_extension          (const gchar       *filename,
-                                                        const gchar       *ext_test);
 
 G_END_DECLS
 
-#endif /* __FILE_UTIL_H__ */
+#endif /* __PIXBUF_UTIL_H__ */
+
 
 
 

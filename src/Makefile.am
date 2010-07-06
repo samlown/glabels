@@ -147,12 +147,16 @@ glabels_3_SOURCES = 			\
 	label-image.h			\
 	label-barcode.c			\
 	label-barcode.h			\
+	pixbuf-util.c			\
+	pixbuf-util.h			\
 	xml-label.c			\
 	xml-label.h			\
 	xml-label-04.c			\
 	xml-label-04.h			\
 	pixbuf-cache.c			\
 	pixbuf-cache.h			\
+	svg-cache.c			\
+	svg-cache.h			\
 	merge.c				\
 	merge.h				\
 	merge-init.c			\
@@ -270,12 +274,16 @@ glabels_3_batch_SOURCES = 		\
 	label-image.h			\
 	label-barcode.c			\
 	label-barcode.h			\
+	pixbuf-util.c			\
+	pixbuf-util.h			\
 	xml-label.c			\
 	xml-label.h			\
 	xml-label-04.c			\
 	xml-label-04.h			\
 	pixbuf-cache.c			\
 	pixbuf-cache.h			\
+	svg-cache.c			\
+	svg-cache.h			\
 	merge.c				\
 	merge.h				\
 	merge-init.c			\
