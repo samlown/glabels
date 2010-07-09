@@ -100,7 +100,8 @@ main (int argc, char **argv)
 
 
         /* Initialize minimal gnome program */
-        gtk_init (&argc, &argv);
+        // gtk_init (&argc, &argv);
+        gtk_type_init(0);
         if (!g_option_context_parse (option_context, &argc, &argv, &error))
 	{
 	        g_print(_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
