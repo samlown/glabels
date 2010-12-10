@@ -419,7 +419,7 @@ gl_merge_text_get_record (glMerge *merge)
 
 		field = g_new0 (glMergeField, 1);
                 field->key = key_from_index (merge_text, i_field);
-#ifndef CSV_ALWAYS_UTF8
+#ifdef CSV_NOT_ALWAYS_UTF8
 		field->value = g_locale_to_utf8 (p->data, -1, NULL, NULL, NULL);
 #else
 		field->value = g_strdup (p->data);
