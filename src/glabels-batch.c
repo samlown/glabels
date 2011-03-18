@@ -136,7 +136,7 @@ main (int argc, char **argv)
 
         /* now print the files */
         for (p = file_list; p; p = p->next) {
-                g_print ("LABEL FILE = %s\n", (gchar *) p->data);
+                // g_print ("LABEL FILE = %s\n", (gchar *) p->data);
                 label = gl_xml_label_open (p->data, &status);
 
 

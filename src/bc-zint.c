@@ -204,7 +204,7 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 		line->width = (double) zline->width - (bleed_extra * 2);
 		line->length = (double) zline->length;
 		/* glBarcodeLine centers based on width, counter-act!!! */
-		line->x = (double) (zline->x + (zline->width / 2.0)) - bleed_extra;
+		line->x = (double) (zline->x + (zline->width / 2.0)); // - bleed_extra;
 		line->y = (double) zline->y;
 
 		gl_barcode_add_shape (gbc, (glBarcodeShape *)line);
