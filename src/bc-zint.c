@@ -192,6 +192,8 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 	struct zint_render_line *zline;
 	struct zint_render_string *zstring;
 
+  double bleed_extra = 0.25;
+
 	render = symbol->rendered;
 	gbc = g_new0(glBarcode, 1);
 	
@@ -199,10 +201,10 @@ static glBarcode *render_zint(struct zint_symbol *symbol, gboolean text_flag) {
 	for ( zline = render->lines; zline != NULL; zline = zline->next ) {
 		line = gl_barcode_shape_line_new ();
 
-		line->width = (double) zline->width;
+		line->width = (double) zline->width - (bleed_extra * 2);
 		line->length = (double) zline->length;
 		/* glBarcodeLine centers based on width, counter-act!!! */
-		line->x = (double) (zline->x + (zline->width / 2.0));
+		line->x = (double) (zline->x + (zline->width / 2.0)) - bleed_extra;
 		line->y = (double) zline->y;
 
 		gl_barcode_add_shape (gbc, (glBarcodeShape *)line);
